@@ -14,7 +14,6 @@
         el.style.transform = `translate3d(0, ${y * speed}px, 0)`;
       });
     }
-
     function onScroll() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
@@ -24,8 +23,6 @@
         ticking = true;
       }
     }
-
-    // micro-parallax grid (works only if data-project-grid exists)
     function updateGrid() {
       const grid = document.querySelector('[data-project-grid]');
       if (!grid) return;
@@ -35,15 +32,9 @@
         card.style.transform = `translate3d(0, ${scrolled * speed * 0.15}px, 0)`;
       });
     }
-
-    function onScrollAll() {
-      onScroll();
-      updateGrid();
-    }
+    function onScrollAll() { onScroll(); updateGrid(); }
 
     window.addEventListener('scroll', onScrollAll, { passive: true });
     window.addEventListener('load', () => { updateLayers(); updateGrid(); });
-  } catch (e) {
-    console && console.warn && console.warn("[parallax] disabled:", e);
-  }
+  } catch (e) { console && console.warn && console.warn("[parallax] disabled:", e); }
 })();
