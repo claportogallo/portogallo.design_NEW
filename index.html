@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>portogallo.design</title>
+  <meta name="description" content="Portfolio di Claudio Portogallo — architettura, artigianato, grafica, BIM+AI, wedding.">
+  <link rel="icon" href="assets/images/favicon.png">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<!-- === Parallax Hero (Talia) START === -->
+<section id="home-hero" class="parallax-container" style="height:100vh;">
+  <div class="parallax-layer" data-parallax-layer data-speed="0.3">
+    <div class="absolute inset-0" style="background:url('assets/images/hero-bg.jpg') center/cover no-repeat; transform:scale(1.1);"></div>
+    <div class="bg-gradient-overlay"></div>
+  </div>
+  <div class="parallax-layer" data-parallax-layer data-speed="0.5">
+    <img src="assets/images/floating-shapes.png" alt="" class="floating-element" style="position:absolute; top:20%; right:18%; width:320px; opacity:.35;">
+    <img src="assets/images/floating-shapes.png" alt="" class="floating-element" style="position:absolute; bottom:18%; left:15%; width:240px; opacity:.25; transform:rotate(35deg);">
+  </div>
+  <div class="parallax-layer" data-parallax-layer data-speed="0.1" style="display:flex; inset:0; justify-content:center; align-items:center; text-align:center; padding: 0 1rem;">
+    <div>
+      <h1 class="hero-title" style="color:#fff;">Portogallo <span style="color:#e5c66b; display:block;">Design</span></h1>
+      <p class="hero-subtitle" style="color:#fff;">Architecture · Craft · Graphics · BIM + AI · Wedding</p>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div style="font-size:.75rem; letter-spacing:.28em;">SCROLL</div>
+    <div class="bar"></div>
+  </div>
+</section>
+<!-- === Parallax Hero (Talia) END === -->
+
+<!-- PRELOADER -->
+<div id="preloader" aria-hidden="true">
+  <div class="pre-wrap">
+<img src="assets/images/logo.png" alt="Portogallo.Design" class="logo-pre">
+    <div class="pre-bar" aria-label="Caricamento">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+<header class="topbar left">
+  <a href="index.html" id="homeBtn" class="logo" aria-label="Home">
+    <img src="assets/images/logo.png" alt="Portogallo.Design" class="logo-img">
+  </a>
+</header>
+
+  <div class="backzones">
+    <div class="bz top" id="bzTop"></div>
+    <div class="bz left" id="bzLeft"></div>
+    <div class="bz right" id="bzRight"></div>
+  </div>
+
+<aside class="tabs ribbon" id="tabs">
+  <button class="vtab" data-filter="architettura">
+    <span class="icon"><img src="assets/icons/architettura.svg" alt="" aria-hidden="true"></span>
+    <span class="label">Architettura</span>
+  </button>
+
+  <button class="vtab" data-filter="artigianato">
+    <span class="icon"><img src="assets/icons/artigianato.svg" alt="" aria-hidden="true"></span>
+    <span class="label">Artigianato</span>
+  </button>
+
+  <button class="vtab" data-filter="grafica">
+    <span class="icon"><img src="assets/icons/grafica.svg" alt="" aria-hidden="true"></span>
+    <span class="label">Grafica</span>
+  </button>
+
+  <button class="vtab" data-filter="bimai">
+    <span class="icon"><img src="assets/icons/bimai.svg" alt="" aria-hidden="true"></span>
+    <span class="label">BIM + AI</span>
+  </button>
+
+  <button class="vtab" data-filter="wedding">
+    <span class="icon"><img src="assets/icons/wedding.svg" alt="" aria-hidden="true"></span>
+    <span class="label">Wedding</span>
+  </button>
+
+  <button class="vtab" data-filter="about">
+    <span class="icon"><img src="assets/icons/about-me.svg" alt="" aria-hidden="true"></span>
+    <span class="label">About me</span>
+  </button>
+</aside>
+
+  <a class="contact-tab" href="#" id="contactTab" title="Contatti"><span>Contatti</span></a>
+
+  <main class="stage">
+    <section class="gallery ten" id="gallery" aria-label="Progetti">
+      <article class="card" data-cats="architettura" data-meta="Firenze · 2025"><img src="assets/images/projects/a/thumb.jpg" alt="A"></article>
+      <article class="card" data-cats="wedding grafica" data-meta="Firenze · 2024"><img src="assets/images/projects/g/thumb.jpg" alt="G"></article>
+      <article class="card" data-cats="bimai architettura" data-meta="Milano · 2018"><img src="assets/images/projects/c/thumb.jpg" alt="C"></article>
+      <article class="card" data-cats="artigianato" data-meta="Firenze · 2024"><img src="assets/images/projects/d/thumb.jpg" alt="D"></article>
+      <article class="card" data-cats="grafica wedding" data-meta="Firenze · 2024"><img src="assets/images/projects/e/thumb.jpg" alt="E"></article>
+      <article class="card" data-cats="architettura" data-meta="Firenze · 2024"><img src="assets/images/projects/f/thumb.jpg" alt="F"></article>
+      <article class="card" data-cats="about" data-meta="Firenze · 2024"><img src="assets/images/projects/i/thumb.jpg" alt="I"></article>
+      <article class="card" data-cats="grafica" data-meta="Firenze · 2023"><img src="assets/images/projects/b/thumb.jpg" alt="B"></article>
+      <article class="card" data-cats="bimai" data-meta="Firenze · 2024"><img src="assets/images/projects/h/thumb.jpg" alt="H"></article>
+      <article class="card" data-cats="artigianato" data-meta="Firenze · 2024"><img src="assets/images/projects/j/thumb.jpg" alt="J"></article>
+    </section>
+  </main>
+
+  <div id="overlay" class="overlay hidden" aria-hidden="true">
+    <button class="close" id="closeOverlay" aria-label="Chiudi">✕</button>
+    <div class="overlay-scroll" id="overlayScroll">
+      <ul class="scroll-dots" id="scrollDots" aria-hidden="true"></ul>
+
+      <article class="project-sheet hidden" id="projectSheet" aria-live="polite">
+        <div class="sheet">
+          <div class="sheet-media" id="sheetMedia"></div>
+          <aside class="sheet-meta">
+            <h2 id="sheetTitle">Titolo progetto</h2>
+            <p id="sheetDesc">Descrizione del progetto. Materiali, ruolo, anno, cliente.</p>
+          </aside>
+        </div>
+      </article>
+
+      <section class="contact-sheet hidden" id="contactSheet" aria-label="Contatti">
+        <div class="contact-inner">
+          <h2>Contatti</h2>
+          <p>
+            Studio Portogallo Design<br>
+            Viuzzo del Roncolino 6 — Firenze (IT)<br>
+            M: +39 334 3216232<br>
+            <a href="mailto:portogallo.claudio@gmail.com">portogallo.claudio@gmail.com</a><br>
+            IG: <a href="https://www.instagram.com/portogallo.design/" target="_blank" rel="noreferrer">@portogallo.design</a>
+          </p>
+          <div class="map">
+            <iframe title="Mappa studio" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+              src="https://www.google.com/maps?q=Viuzzo%20del%20Roncolino%206%2C%20Firenze&t=m&z=16&output=embed&iwloc=near"></iframe>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="footnote">© <span id="year"></span> diritti riservati</footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/parallax.js" defer></script>
+</body>
+</html>
