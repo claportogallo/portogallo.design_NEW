@@ -27,7 +27,7 @@ body{
   background:
     radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 1.5px) 0 0/24px 24px,
     var(--bg);
-  overflow:hidden;
+  overflow:auto;
   user-select:none;
   cursor:default;
 }
