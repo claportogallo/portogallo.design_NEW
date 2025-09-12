@@ -204,38 +204,21 @@
         margin-bottom: 1rem;
     }
   
-    /* Hide native scrollbar inside modal content and add custom scroll dots */
-    .project-modal-content {
-        border-radius: 1rem;
-        scrollbar-width: none;          /* Firefox */
-        -ms-overflow-style: none;       /* IE/Edge */
-        background-clip: padding-box;
-    }
-    .project-modal-content::-webkit-scrollbar { display: none; } /* WebKit */
-    .scroll-dots{
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%);
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        width: 14px;
-        pointer-events: none;
-    }
-    .scroll-dots .dot{
-        width: 6px;
-        height: 6px;
-        border-radius: 9999px;
-        background: hsla(var(--muted) / 0.6);
-        transition: transform .15s ease, background-color .15s ease;
-    }
-    .scroll-dots .dot.active{
-        background: hsl(var(--foreground));
-        transform: scale(1.2);
-    }
+    /* === Custom spacing in project modal === */
+    .project-modal-content img{ display:block; width:100%; margin:0 !important; }
+    .project-modal-content > * + *{ margin-top:1rem; }
+    .project-modal-content > img + img{ margin-top:0 !important; }
+    /* Hide native scrollbar and keep rounded corners */
+    .project-modal-content{ border-radius: 1rem; scrollbar-width:none; -ms-overflow-style:none; background-clip:padding-box; }
+    .project-modal-content::-webkit-scrollbar{ display:none; }
+    /* Hide the close 'X' */
+    #modalClose{ display:none !important; }
+    /* Scroll dots column */
+    .scroll-dots{ position:absolute; top:50%; right:10px; transform:translateY(-50%); display:flex; flex-direction:column; gap:10px; width:14px; pointer-events:none; }
+    .scroll-dots .dot{ width:6px; height:6px; border-radius:9999px; background:rgba(180,180,180,.6); transition:transform .15s ease, background-color .15s ease;}
+    .scroll-dots .dot.active{ background:#0b0b0c; transform:scale(1.2); }
 
-</style>
+  </style>
 </head>
 <body class="bg-cream-white">
   <div id="root">
@@ -243,7 +226,17 @@
       <nav id="floating-nav" class="glass-nav transition-all duration-500 opacity-90 translate-y-2">
         <ul class="flex items-center gap-6">
           <li><a href="#home" class="text-sm tracking-wide text-foreground/70 hover:text-foreground transition-colors duration-300 relative group">Home<span class="absolute -bottom-1 left-0 w-0 h-px bg-accent-gold transition-all duration-300 group-hover:w-full"></span></a></li>
-          <li><a href="#projects" class="text-sm tracking-wide text-foreground/70 hover:text-foreground transition-colors duration-300 relative group">Progetti<span class="absolute -bottom-1 left-0 w-0 h-px bg-accent-gold transition-all duration-300 group-hover:w-full"></span></a></li>
+          <li class="relative group"><a href="#projects" class="text-sm tracking-wide text-foreground/70 hover:text-foreground transition-colors duration-300 relative group">Progetti<span class="absolute -bottom-1 left-0 w-0 h-px bg-accent-gold transition-all duration-300 group-hover:w-full"></span></a>
+          <div class="absolute left-0 mt-2 w-44 bg-white shadow-xl rounded-xl p-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition">
+            <button class="w-full text-left px-3 py-1.5 rounded-md hover:bg-stone-100 text-sm" onclick="window.applyFilterFromMenu('all')">Tutti</button>
+            <button class="w-full text-left px-3 py-1.5 rounded-md hover:bg-stone-100 text-sm" onclick="window.applyFilterFromMenu('architettura')">Architettura</button>
+            <button class="w-full text-left px-3 py-1.5 rounded-md hover:bg-stone-100 text-sm" onclick="window.applyFilterFromMenu('artigianato')">Artigianato</button>
+            <button class="w-full text-left px-3 py-1.5 rounded-md hover:bg-stone-100 text-sm" onclick="window.applyFilterFromMenu('grafica')">Grafica</button>
+            <button class="w-full text-left px-3 py-1.5 rounded-md hover:bg-stone-100 text-sm" onclick="window.applyFilterFromMenu('bimai')">BIM+AI</button>
+            <button class="w-full text-left px-3 py-1.5 rounded-md hover:bg-stone-100 text-sm" onclick="window.applyFilterFromMenu('wedding')">Wedding</button>
+            <button class="w-full text-left px-3 py-1.5 rounded-md hover:bg-stone-100 text-sm" onclick="window.applyFilterFromMenu('about')">About</button>
+          </div>
+        </li>
           <li><a href="#about" class="text-sm tracking-wide text-foreground/70 hover:text-foreground transition-colors duration-300 relative group">About<span class="absolute -bottom-1 left-0 w-0 h-px bg-accent-gold transition-all duration-300 group-hover:w-full"></span></a></li>
           <li><a href="#contact" class="text-sm tracking-wide text-foreground/70 hover:text-foreground transition-colors duration-300 relative group">Contatti<span class="absolute -bottom-1 left-0 w-0 h-px bg-accent-gold transition-all duration-300 group-hover:w-full"></span></a></li>
         </ul>
@@ -301,7 +294,7 @@
                 Una collezione curata di progetti di architettura e design
               </p>
             </div>
-            <div id="project-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+            <div id="project-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
               <!-- I progetti verranno inseriti qui da JavaScript -->
             </div>
           </div>
@@ -322,6 +315,10 @@
                         <div class="relative">
                             <div class="aspect-[4/5] bg-gradient-hero rounded-3xl shadow-deep overflow-hidden">
                                 <img src="assets/images/projects/i/1.jpg" alt="Ritratto del designer" class="w-full h-full object-cover">
+                            </div>
+                            <div class="mt-6 grid grid-cols-2 gap-4">
+                              <img src="assets/images/projects/i/3.jpg" alt="Studio e dettagli" class="w-full rounded-2xl shadow-deep">
+                              <img src="assets/images/projects/i/5.jpg" alt="Processo e materiali" class="w-full rounded-2xl shadow-deep">
                             </div>
                             <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-accent-gold/20 rounded-full blur-3xl"></div>
                             <div class="absolute -top-6 -left-6 w-24 h-24 bg-warm-stone/30 rounded-full blur-2xl"></div>
@@ -499,11 +496,10 @@
       const sheetMedia = document.getElementById('sheetMedia');
       const sheetTitle = document.getElementById('sheetTitle');
       const sheetDesc = document.getElementById('sheetDesc');
-      // --- Custom scroll dots ---
+      // ====== Scroll dots for modal ======
       const modalContent = document.querySelector('.project-modal-content');
       const dotsContainer = document.getElementById('modal-dots');
-      const DOTS = 11; // number of dots (tweak if you want denser/sparser)
-
+      const DOTS = 11;
       function buildDots(){
         if(!dotsContainer) return;
         dotsContainer.innerHTML = '';
@@ -521,11 +517,14 @@
         const idx = Math.max(0, Math.min(DOTS-1, Math.round(progress * (DOTS-1))));
         dots.forEach((d,i)=> d.classList.toggle('active', i === idx));
       }
-      modalContent && modalContent.addEventListener('scroll', updateDots);
+      if (modalContent){
+        modalContent.addEventListener('scroll', updateDots, {passive:true});
+        modalContent.addEventListener('wheel', updateDots, {passive:true});
+      }
       buildDots();
 
       
-      Object.entries(PROJECTS).forEach(([key, project], index) => {
+      Object.entries(PROJECTS).filter(([key, project]) => project.cats.indexOf('about') === -1).forEach(([key, project], index) => {
         const card = document.createElement('div');
         card.className = 'project-card group';
         card.style.animationDelay = `${index * 0.1}s`;
@@ -535,9 +534,9 @@
             <img src="${project.thumb}" alt="${project.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
           </div>
           <div class="absolute bottom-0 left-0 right-0 p-6 text-cream-white z-20 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-            <div class="mb-2"><span class="text-xs tracking-widest text-accent-gold uppercase">${project.cats.join(' & ')}</span></div>
-            <h3 class="text-xl font-light mb-1">${project.title}</h3>
-            <p class="text-sm text-cream-white/70">${project.meta}</p>
+            <div class="mb-2"><span class="text-xs tracking-widest text-white uppercase">${project.cats.join(' & ')}</span></div>
+            <h3 class="text-xl font-bold mb-1 text-white">${project.title}</h3>
+            <p class="text-sm text-white">${project.meta}</p>
           </div>
         `;
         
@@ -551,12 +550,10 @@
             img.alt = project.title;
             sheetMedia.appendChild(img);
           });
-          
           modal.classList.add('open');
-          document.body.style.overflow = 'hidden';
           buildDots();
           updateDots();
-
+          document.body.style.overflow = 'hidden';
         });
         
         projectGrid.appendChild(card);
