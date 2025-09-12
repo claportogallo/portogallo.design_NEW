@@ -203,7 +203,39 @@
     #sheetMedia img {
         margin-bottom: 1rem;
     }
-  </style>
+  
+    /* Hide native scrollbar inside modal content and add custom scroll dots */
+    .project-modal-content {
+        border-radius: 1rem;
+        scrollbar-width: none;          /* Firefox */
+        -ms-overflow-style: none;       /* IE/Edge */
+        background-clip: padding-box;
+    }
+    .project-modal-content::-webkit-scrollbar { display: none; } /* WebKit */
+    .scroll-dots{
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 14px;
+        pointer-events: none;
+    }
+    .scroll-dots .dot{
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background: hsla(var(--muted) / 0.6);
+        transition: transform .15s ease, background-color .15s ease;
+    }
+    .scroll-dots .dot.active{
+        background: hsl(var(--foreground));
+        transform: scale(1.2);
+    }
+
+</style>
 </head>
 <body class="bg-cream-white">
   <div id="root">
@@ -269,7 +301,7 @@
                 Una collezione curata di progetti di architettura e design
               </p>
             </div>
-            <div id="project-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+            <div id="project-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
               <!-- I progetti verranno inseriti qui da JavaScript -->
             </div>
           </div>
@@ -336,7 +368,7 @@
 
   <!-- Project Modal -->
   <div id="project-modal" class="project-modal">
-      <div class="project-modal-content">
+      <div class="project-modal-content"><div id="modal-dots" class="scroll-dots" aria-hidden="true"></div>
           <button class="project-modal-close" id="project-modal-close">&times;</button>
           <div class="sheet-media" id="sheetMedia"></div>
           <aside class="sheet-meta mt-8">
@@ -467,14 +499,39 @@
       const sheetMedia = document.getElementById('sheetMedia');
       const sheetTitle = document.getElementById('sheetTitle');
       const sheetDesc = document.getElementById('sheetDesc');
+      // --- Custom scroll dots ---
+      const modalContent = document.querySelector('.project-modal-content');
+      const dotsContainer = document.getElementById('modal-dots');
+      const DOTS = 11; // number of dots (tweak if you want denser/sparser)
+
+      function buildDots(){
+        if(!dotsContainer) return;
+        dotsContainer.innerHTML = '';
+        for(let i=0;i<DOTS;i++){
+          const s = document.createElement('span');
+          s.className = 'dot';
+          dotsContainer.appendChild(s);
+        }
+      }
+      function updateDots(){
+        if(!dotsContainer || !modalContent) return;
+        const dots = dotsContainer.querySelectorAll('.dot');
+        const maxScroll = modalContent.scrollHeight - modalContent.clientHeight;
+        const progress = maxScroll > 0 ? (modalContent.scrollTop / maxScroll) : 0;
+        const idx = Math.max(0, Math.min(DOTS-1, Math.round(progress * (DOTS-1))));
+        dots.forEach((d,i)=> d.classList.toggle('active', i === idx));
+      }
+      modalContent && modalContent.addEventListener('scroll', updateDots);
+      buildDots();
+
       
-      Object.entries(PROJECTS).filter(([key, project]) => project.cats.indexOf('about') === -1).forEach(([key, project], index) => {
+      Object.entries(PROJECTS).forEach(([key, project], index) => {
         const card = document.createElement('div');
         card.className = 'project-card group';
         card.style.animationDelay = `${index * 0.1}s`;
         
         card.innerHTML = `
-          <div class="aspect-[4/5] overflow-hidden">
+          <div class="aspect-square overflow-hidden">
             <img src="${project.thumb}" alt="${project.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
           </div>
           <div class="absolute bottom-0 left-0 right-0 p-6 text-cream-white z-20 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
@@ -494,8 +551,12 @@
             img.alt = project.title;
             sheetMedia.appendChild(img);
           });
+          
           modal.classList.add('open');
           document.body.style.overflow = 'hidden';
+          buildDots();
+          updateDots();
+
         });
         
         projectGrid.appendChild(card);
