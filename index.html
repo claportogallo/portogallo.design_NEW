@@ -309,6 +309,42 @@
 .map-square::before{content:'';display:block;padding-top:100%} /* 1:1 */
 .map-square>iframe{position:absolute;inset:0;width:100%;height:100%;border:0;filter:grayscale(1) contrast(1.45) brightness(.95)}
 
+  
+/* Hide native scrollbars site-wide and in modal */
+html, body { scrollbar-width: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none; }
+.project-modal-content { scrollbar-width: none; -ms-overflow-style: none; }
+.project-modal-content::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none; }
+
+  
+/* Site dots: full-height column with even spacing */
+.site-scroll-dots{ position:fixed; right:12px; top:0; bottom:0; height:100vh; transform:none; z-index:999; pointer-events:none; display:flex; align-items:center; }
+.site-scroll-dots .dots{ display:flex; flex-direction:column; justify-content:space-between; gap:0; height:calc(100vh - 32px); position:relative; }
+.site-scroll-dots .dot{ width:6px; height:6px; border-radius:9999px; background:rgba(180,180,180,.6); transition:transform .15s ease, background-color .15s ease; }
+.site-scroll-dots .dot.active{ background:#0b0b0c; transform:scale(1.1); }
+.site-scroll-dots .trails{ position:absolute; inset:0; pointer-events:none; height:calc(100vh - 32px); }
+.site-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation: siteTrail 1.9s ease-out forwards; left:4px; }
+@keyframes siteTrail{ 0%{opacity:.75; transform:scale(1)} 100%{opacity:0; transform:scale(.85)} }
+@media (max-width:768px){ .site-scroll-dots{ right:8px } }
+
+  
+/* Modal dots: full-height inside modal */
+.modal-scroll-dots{ position:absolute; right:10px; top:0; bottom:0; transform:none; width:14px; z-index:5; pointer-events:none; }
+.modal-scroll-dots .dots{ display:flex; flex-direction:column; justify-content:space-between; gap:0; height:calc(100% - 24px); position:relative; }
+.modal-scroll-dots .dot{ width:6px; height:6px; border-radius:9999px; background:rgba(180,180,180,.6); transition:transform .15s ease, background-color .15s ease; }
+.modal-scroll-dots .dot.active{ background:#0b0b0c; transform:scale(1.1); }
+.modal-scroll-dots .trails{ position:absolute; inset:0; pointer-events:none; height:calc(100% - 24px); }
+.modal-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation: modalTrail 1.9s ease-out forwards; left:4px; }
+@keyframes modalTrail{ 0%{opacity:.75; transform:scale(1)} 100%{opacity:0; transform:scale(.85)} }
+
+  
+/* Contact map 1/4 size (square), centered */
+.map-wrap{ border-radius:16px; overflow:hidden; box-shadow:0 10px 24px rgba(0,0,0,.12); }
+.map-square{ position:relative; width:50%; margin:0 auto; } /* half side -> quarter area */
+.map-square::before{ content:''; display:block; padding-top:100%; } /* 1:1 */
+.map-square > iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; filter:grayscale(1) contrast(1.45) brightness(.95); }
+@media (max-width:768px){ .map-square{ width:70%; } }
+
   </style>
 </head>
 <body class="bg-cream-white">
@@ -840,6 +876,99 @@
   c.addEventListener('scroll', upd, {passive:true}); c.addEventListener('wheel', upd, {passive:true});
   const root=c.parentElement||c; const ob=new MutationObserver(()=>{ if(root.classList.contains('open')) open(); });
   ob.observe(root,{attributes:true,attributeFilter:['class']}); open();
+})();
+
+
+// Site dots V3 (full column + dynamic count + trail, guarded)
+(function(){
+  if (window.__scrollDotsV3) return; window.__scrollDotsV3 = true;
+  const wrap = document.getElementById('site-scroll-dots'); if(!wrap) return;
+  const dotsWrap = wrap.querySelector('.dots');
+  const trails = wrap.querySelector('.trails');
+
+  function build(){
+    const N = Math.max(10, Math.round(window.innerHeight / 28)); // dynamic density
+    dotsWrap.innerHTML = '';
+    for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; dotsWrap.appendChild(s); }
+  }
+  function pageProgress(){
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    return max>0 ? (h.scrollTop / max) : 0;
+  }
+  let last=-1;
+  function update(){
+    const dots = dotsWrap.querySelectorAll('.dot'); if(!dots.length) return;
+    const N = dots.length;
+    const p = pageProgress();
+    const idx = Math.max(0, Math.min(N-1, Math.round(p*(N-1))));
+    dots.forEach((d,i)=> d.classList.toggle('active', i===idx));
+    if(idx !== last && dots[idx]){
+      const r = dots[idx].getBoundingClientRect();
+      const rw = dotsWrap.getBoundingClientRect();
+      const y = r.top - rw.top + r.height/2 - 3;
+      const t = document.createElement('span');
+      t.className = 'trail';
+      t.style.top = y + 'px';
+      trails.appendChild(t);
+      setTimeout(()=> t.remove(), 1900);
+      last = idx;
+    }
+  }
+  function init(){ build(); update(); }
+
+  init();
+  window.addEventListener('resize', init, {passive:true});
+  window.addEventListener('scroll', update, {passive:true});
+})();
+
+
+// Modal dots V3 (full column + dynamic count + trail, guarded)
+(function(){
+  if (window.__modalDotsV3) return; window.__modalDotsV3 = true;
+  const content = document.querySelector('.project-modal-content');
+  const cont = document.getElementById('modal-dots');
+  if (!content || !cont) return;
+  const dotsWrap = cont.querySelector('.dots');
+  const trails = cont.querySelector('.trails');
+
+  function build(){
+    const N = Math.max(8, Math.round(content.clientHeight / 28));
+    dotsWrap.innerHTML = '';
+    for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; dotsWrap.appendChild(s); }
+  }
+  function progress(){
+    const max = content.scrollHeight - content.clientHeight;
+    return max>0 ? (content.scrollTop / max) : 0;
+  }
+  let last=-1;
+  function update(){
+    const dots = dotsWrap.querySelectorAll('.dot'); if(!dots.length) return;
+    const N = dots.length;
+    const p = progress();
+    const idx = Math.max(0, Math.min(N-1, Math.round(p*(N-1))));
+    dots.forEach((d,i)=> d.classList.toggle('active', i===idx));
+    if(idx !== last && dots[idx]){
+      const r = dots[idx].getBoundingClientRect();
+      const rw = dotsWrap.getBoundingClientRect();
+      const y = r.top - rw.top + r.height/2 - 3;
+      const t = document.createElement('span');
+      t.className = 'trail';
+      t.style.top = y + 'px';
+      trails.appendChild(t);
+      setTimeout(()=> t.remove(), 1900);
+      last = idx;
+    }
+  }
+  function init(){ build(); update(); }
+
+  // Rebuild on resize/open
+  new ResizeObserver(()=>init()).observe(content);
+  content.addEventListener('scroll', update, {passive:true});
+  const root = content.parentElement || content;
+  const obs = new MutationObserver(()=>{ if(root.classList.contains('open')) init(); });
+  obs.observe(root, {attributes:true, attributeFilter:['class']});
+  init();
 })();
 
 </script>
