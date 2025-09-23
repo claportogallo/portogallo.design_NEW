@@ -272,9 +272,54 @@
 #home-bookmarks .bookmark:hover{ transform: translateY(-1px); background:#111; }
 #home-bookmarks .rail{ display:flex; flex-wrap:wrap; gap:.5rem; }
 @media (min-width:768px){ #home-bookmarks .rail{ gap:.6rem; } }
+  
+/* Hide any legacy left-side rails/progress bars */
+#left-progress, #side-progress, .left-progress, .progress-rail, .scroll-rail, .scroll-rail-left { display:none !important; }
+
+  
+/* Site scroll dots (right) */
+.site-scroll-dots{position:fixed;right:12px;top:50%;transform:translateY(-50%);width:14px;display:flex;flex-direction:column;align-items:center;z-index:999;pointer-events:none}
+.site-scroll-dots .dots{display:flex;flex-direction:column;gap:10px;position:relative}
+.site-scroll-dots .dot{width:6px;height:6px;border-radius:9999px;background:rgba(180,180,180,.6);transition:transform .15s ease,background-color .15s ease}
+.site-scroll-dots .dot.active{background:#0b0b0c;transform:scale(1.1)}
+.site-scroll-dots .trails{position:absolute;inset:0;pointer-events:none}
+.site-scroll-dots .trail{position:absolute;width:6px;height:6px;border-radius:9999px;background:#0b0b0c;opacity:.75;animation:siteTrail 1.8s ease-out forwards}
+@keyframes siteTrail{0%{opacity:.75;transform:scale(1)}100%{opacity:0;transform:scale(.85)}}
+@media (max-width:768px){.site-scroll-dots{right:8px}}
+
+  
+/* Modal scroll dots */
+.modal-scroll-dots{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:14px;z-index:5;pointer-events:none}
+.modal-scroll-dots .dots{display:flex;flex-direction:column;gap:10px;position:relative}
+.modal-scroll-dots .dot{width:6px;height:6px;border-radius:9999px;background:rgba(180,180,180,.6);transition:transform .15s ease,background-color .15s ease}
+.modal-scroll-dots .dot.active{background:#0b0b0c;transform:scale(1.1)}
+.modal-scroll-dots .trails{position:absolute;inset:0;pointer-events:none}
+.modal-scroll-dots .trail{position:absolute;width:6px;height:6px;border-radius:9999px;background:#0b0b0c;opacity:.75;animation:modalTrail 1.8s ease-out forwards}
+@keyframes modalTrail{0%{opacity:.75;transform:scale(1)}100%{opacity:0;transform:scale(.85)}}
+
+  
+/* About: 3 equal stacked photos */
+#about .about-photos{display:grid;grid-template-rows:repeat(3,1fr);gap:1rem;height:100%}
+#about .about-photos img{width:100%;height:100%;object-fit:cover;border-radius:1rem}
+
+  
+/* Contact: square BW map */
+.map-wrap{border-radius:16px;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.12)}
+.map-square{position:relative;width:100%}
+.map-square::before{content:'';display:block;padding-top:100%} /* 1:1 */
+.map-square>iframe{position:absolute;inset:0;width:100%;height:100%;border:0;filter:grayscale(1) contrast(1.45) brightness(.95)}
+
   </style>
 </head>
 <body class="bg-cream-white">
+
+<!-- Site scroll dots -->
+<div id="site-scroll-dots" class="site-scroll-dots" aria-hidden="true">
+  <div class="dots"></div>
+  <div class="trails"></div>
+</div>
+
+
 <!-- Rollover / Preloader -->
 <div id="rollover" aria-hidden="true" class="fixed inset-0 z-[9999] flex items-center justify-center bg-stone-950 text-white opacity-100 transition-opacity duration-700">
   <div class="text-center select-none">
@@ -346,17 +391,7 @@
           </div>
         </section>
 
-        <!-- Segnalibri categorie (home) -->
-<div id="home-bookmarks" class="max-w-6xl mx-auto px-6 md:px-10 lg:px-14 mt-8 md:mt-10">
-  <div class="rail">
-    <a href="#projects" class="bookmark" data-cat="all"          onclick="applyFilterFromMenu('all');return false;">Tutti</a>
-    <a href="#projects" class="bookmark" data-cat="architettura" onclick="applyFilterFromMenu('architettura');return false;">Architettura</a>
-    <a href="#projects" class="bookmark" data-cat="artigianato"  onclick="applyFilterFromMenu('artigianato');return false;">Artigianato</a>
-    <a href="#projects" class="bookmark" data-cat="grafica"      onclick="applyFilterFromMenu('grafica');return false;">Grafica</a>
-    <a href="#projects" class="bookmark" data-cat="bimai"        onclick="applyFilterFromMenu('bimai');return false;">BIM+AI</a>
-    <a href="#projects" class="bookmark" data-cat="wedding"      onclick="applyFilterFromMenu('wedding');return false;">Wedding</a>
-    <a href="#projects" class="bookmark" data-cat="about"        onclick="applyFilterFromMenu('about');return false;">About</a>
-  </div>
+        
 </div>
 <section id="projects" class="py-24 px-8">
           <div class="max-w-7xl mx-auto">
@@ -434,11 +469,11 @@
         
           <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             <div class="rounded-2xl overflow-hidden shadow-deep">
-              <iframe
+              <div class="map-wrap"><div class="map-square"><iframe
                 title="Mappa - Portogallo.Design"
                 src="https://www.google.com/maps?q=Firenze%2C+Italia&output=embed"
                 width="100%" height="360" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-              </iframe>
+              </iframe></div></div>
             </div>
             <div class="text-left space-y-4 text-muted-foreground">
               <p><strong>Email</strong><br><a class="underline hover:no-underline" href="mailto:portogallo.claudio@gmail.com">portogallo.claudio@gmail.com</a></p>
@@ -468,7 +503,7 @@
 
   <!-- Project Modal -->
   <div id="project-modal" class="project-modal">
-      <div class="project-modal-content"><div id="modal-dots" class="scroll-dots" aria-hidden="true"></div>
+      <div class="project-modal-content"><div id="modal-dots" class="modal-scroll-dots"><div class="dots"></div><div class="trails"></div></div>
           <button class="project-modal-close" id="project-modal-close">&times;</button>
           <div class="sheet-media" id="sheetMedia"></div>
           <aside class="sheet-meta mt-8">
@@ -757,13 +792,56 @@
     });
   }
 
-  window.applyFilterFromMenu = function(cat){
-    const btn = (filterBar && (filterBar.querySelector(`[data-cat="${cat}"]`) || filterBar.querySelector('[data-cat="all"]')));
-    if (btn){ btn.click(); } else { window.applyFilter(cat); }
-    const grid = document.getElementById('project-grid-container') || document.getElementById('projects');
-    if (grid){ grid.scrollIntoView({behavior:'smooth', block:'start'}); }
-  };
+  window.applyFilterFromMenu=function(cat){
+  const fb=document.getElementById('project-filter');
+  const b=(fb&&(fb.querySelector(`[data-cat="${cat}"]`)||fb.querySelector('[data-cat="all"]')));
+  if(b){ b.click(); } else if(typeof window.applyFilter==='function'){ window.applyFilter(cat); }
+  // NON scrollare la vista (mantieni "Lavori selezionati" a vista)
+};
 })();
+
+// site dots
+(function(){
+  const w=document.getElementById('site-scroll-dots'); if(!w) return;
+  const d=w.querySelector('.dots'), t=w.querySelector('.trails'); const N=13; let last=-1;
+  function build(){ d.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; d.appendChild(s); } }
+  function prog(){ const h=document.documentElement; const m=h.scrollHeight-h.clientHeight; return m>0? (h.scrollTop/m) : 0; }
+  function upd(){
+    const p=prog(); const dots=d.querySelectorAll('.dot');
+    const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1))));
+    dots.forEach((e,i)=> e.classList.toggle('active', i===idx));
+    if(idx!==last && dots[idx]){
+      const r=dots[idx].getBoundingClientRect(); const rw=d.getBoundingClientRect();
+      const y=r.top-rw.top + r.height/2 - 3; const tr=document.createElement('span'); tr.className='trail';
+      tr.style.top = y+'px'; tr.style.left='4px'; t.appendChild(tr); setTimeout(()=>tr.remove(), 1900); last=idx;
+    }
+  }
+  build(); upd(); window.addEventListener('scroll', upd, {passive:true}); window.addEventListener('resize', ()=>{build(); upd();}, {passive:true});
+})();
+
+
+// modal dots
+(function(){
+  const c=document.querySelector('.project-modal-content'); const k=document.getElementById('modal-dots'); if(!c||!k) return;
+  const d=k.querySelector('.dots'), t=k.querySelector('.trails'); const N=11; let last=-1;
+  function build(){ d.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; d.appendChild(s);} }
+  function prog(){ const m=c.scrollHeight-c.clientHeight; return m>0? (c.scrollTop/m) : 0; }
+  function upd(){
+    const p=prog(); const dots=d.querySelectorAll('.dot');
+    const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1))));
+    dots.forEach((e,i)=> e.classList.toggle('active', i===idx));
+    if(idx!==last && dots[idx]){
+      const r=dots[idx].getBoundingClientRect(); const rw=d.getBoundingClientRect();
+      const y=r.top-rw.top + r.height/2 - 3; const tr=document.createElement('span'); tr.className='trail';
+      tr.style.top=y+'px'; tr.style.left='4px'; t.appendChild(tr); setTimeout(()=>tr.remove(), 1900); last=idx;
+    }
+  }
+  function open(){ build(); upd(); }
+  c.addEventListener('scroll', upd, {passive:true}); c.addEventListener('wheel', upd, {passive:true});
+  const root=c.parentElement||c; const ob=new MutationObserver(()=>{ if(root.classList.contains('open')) open(); });
+  ob.observe(root,{attributes:true,attributeFilter:['class']}); open();
+})();
+
 </script>
 </body>
 </html>
