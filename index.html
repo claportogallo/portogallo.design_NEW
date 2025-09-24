@@ -348,13 +348,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0 !important; height: 
   </style>
 <style>
 
-/* Hide native scrollbars */
+/* hide native scrollbar */
 html, body { scrollbar-width:none; }
 html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!important; display:none; }
 .project-modal-content { scrollbar-width:none; -ms-overflow-style:none; }
 .project-modal-content::-webkit-scrollbar { width:0!important; height:0!important; display:none; }
 
-/* Site dots column full height */
+/* dots - page */
 .site-scroll-dots{ position:fixed; right:12px; top:0; bottom:0; height:100vh; transform:none; z-index:999; pointer-events:none; display:flex; align-items:center; }
 .site-scroll-dots .dots{ display:flex; flex-direction:column; justify-content:space-between; gap:0; height:calc(100vh - 32px); position:relative; }
 .site-scroll-dots .dot{ width:6px; height:6px; border-radius:9999px; background:rgba(180,180,180,.6); transition:transform .15s ease, background-color .15s ease; }
@@ -362,9 +362,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
 .site-scroll-dots .trails{ position:absolute; inset:0; pointer-events:none; height:calc(100vh - 32px); }
 .site-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation:siteTrail 1.6s ease-out forwards; left:4px; }
 @keyframes siteTrail{ 0%{opacity:.75; transform:scale(1)} 100%{opacity:0; transform:scale(.85)} }
-@media (max-width:768px){ .site-scroll-dots{ right:8px } }
 
-/* Modal dots full height */
+/* dots - modal */
 .modal-scroll-dots{ position:absolute; right:10px; top:0; bottom:0; transform:none; width:14px; z-index:5; pointer-events:none; }
 .modal-scroll-dots .dots{ display:flex; flex-direction:column; justify-content:space-between; gap:0; height:calc(100% - 24px); position:relative; }
 .modal-scroll-dots .dot{ width:6px; height:6px; border-radius:9999px; background:rgba(180,180,180,.6); transition:transform .15s ease, background-color .15s ease; }
@@ -373,7 +372,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
 .modal-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation:modalTrail 1.6s ease-out forwards; left:4px; }
 @keyframes modalTrail{ 0%{opacity:.75; transform:scale(1)} 100%{opacity:0; transform:scale(.85)} }
 
-/* Contact: map left with text right, square */
+/* contact: map RIGHT, square */
 #contact{ position:relative; }
 #contact::after{ content:''; display:block; clear:both; }
 #contact .map-wrap{ float:right; width:min(680px, 48vw); margin:0 0 24px 40px; border-radius:16px; overflow:hidden; box-shadow:0 10px 24px rgba(0,0,0,.12); }
@@ -385,12 +384,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
 
 </style>
 </head>
-<body class="bg-cream-white">
+\1
 
-<!-- Site scroll dots (clean) -->
 <div id="site-scroll-dots" class="site-scroll-dots" aria-hidden="true">
-  <div class="dots"></div>
-  <div class="trails"></div>
+  <div class="dots"></div><div class="trails"></div>
 </div>
 
 
@@ -583,13 +580,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
 
   <!-- Project Modal -->
   <div id="project-modal" class="project-modal">
-      <div class="project-modal-content">
-<!-- Modal scroll dots (clean) inside modal -->
-<div id="modal-dots" class="modal-scroll-dots">
-  <div class="dots"></div>
-  <div class="trails"></div>
-</div>
-<div class="trails"></div></div>
+      <div class="project-modal-content"><div id="modal-dots" class="modal-scroll-dots"><div class="dots"></div><div class="trails"></div></div><div class="trails"></div></div>
           <button class="project-modal-close" id="project-modal-close">&times;</button>
           <div class="sheet-media" id="sheetMedia"></div>
           <aside class="sheet-meta mt-8">
@@ -603,405 +594,46 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
   
 
 <script>
-// Robust Rollover: never block; DOMContentLoaded or Load (whichever first), plus hard fallback
 (function(){
-  if (window.__ROLLOVER_V2) return; window.__ROLLOVER_V2 = true;
-  const ro = document.getElementById('rollover');
-  if (!ro) return;
-
-  const firstVisit = !sessionStorage.getItem('rolloverDone');
-  function hideNow(delay){
-    setTimeout(()=>{
-      ro.classList.add('hide');
-      setTimeout(()=>{ ro.style.display='none'; }, 600);
-    }, delay);
-  }
-
-  if (!firstVisit){
-    hideNow(0);
-    return;
-  }
-
-  let done = false;
-  function once(){ if (done) return; done = true; hideNow(400); sessionStorage.setItem('rolloverDone','1'); }
-
-  // Fire on DOM ready
-  if (document.readyState === 'interactive' || document.readyState === 'complete'){
-    once();
-  } else {
-    document.addEventListener('DOMContentLoaded', once, {once:true});
-  }
-  // Also fire on window load (in case DOMContentLoaded somehow missed)
+  if (window.__ROLLOVER_V3) return; window.__ROLLOVER_V3 = true;
+  const ro = document.getElementById('rollover'); if(!ro) return;
+  const first = !sessionStorage.getItem('rolloverDone');
+  function hide(delay){ setTimeout(()=>{ ro.classList.add('hide'); setTimeout(()=>{ ro.style.display='none'; }, 600); }, delay); }
+  if(!first){ hide(0); return; }
+  let done=false; const once=()=>{ if(done) return; done=true; hide(400); sessionStorage.setItem('rolloverDone','1'); };
+  if(document.readyState==='interactive' || document.readyState==='complete'){ once(); }
+  else { document.addEventListener('DOMContentLoaded', once, {once:true}); }
   window.addEventListener('load', once, {once:true});
-  // Hard fallback after 3.5s from DOM start
   setTimeout(once, 3500);
 })();
 </script>
 
 
 <script>
-// Site dots (single instance & single trail)
 (function(){
-  if (window.__SD_V2) return; window.__SD_V2 = true;
-  const wrap = document.getElementById('site-scroll-dots'); if(!wrap) return;
-  const dotsWrap = wrap.querySelector('.dots'); const trails = wrap.querySelector('.trails');
-  function build(){ const N = Math.max(10, Math.round(window.innerHeight/28)); dotsWrap.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; dotsWrap.appendChild(s);} }
+  if (window.__SD_CLEAN) return; window.__SD_CLEAN = true;
+  const wrap=document.getElementById('site-scroll-dots'); if(!wrap) return;
+  const d=wrap.querySelector('.dots'), t=wrap.querySelector('.trails');
+  function build(){ const N=Math.max(10, Math.round(window.innerHeight/28)); d.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; d.appendChild(s);} }
   function prog(){ const h=document.documentElement; const m=h.scrollHeight-h.clientHeight; return m>0?h.scrollTop/m:0; }
   let last=-1;
-  function update(){ const dots=dotsWrap.querySelectorAll('.dot'); if(!dots.length) return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
-    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=dotsWrap.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const trail=document.createElement('span'); trail.className='trail'; trail.style.top=y+'px'; trails.appendChild(trail); setTimeout(()=>trail.remove(), 1600); last=idx; } }
-  function init(){ build(); update(); }
-  init(); window.addEventListener('resize', init, {passive:true}); window.addEventListener('scroll', update, {passive:true});
+  function upd(){ const dots=d.querySelectorAll('.dot'); if(!dots.length)return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((e,i)=>e.classList.toggle('active', i===idx));
+    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=d.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const tr=document.createElement('span'); tr.className='trail'; tr.style.top=y+'px'; t.appendChild(tr); setTimeout(()=>tr.remove(),1600); last=idx; } }
+  const go=()=>{ build(); upd(); }; go();
+  window.addEventListener('resize', go, {passive:true}); window.addEventListener('scroll', upd, {passive:true});
 })();
-</script>
-
-
-<script>
-// Modal dots (single instance & single trail)
 (function(){
-  if (window.__MD_V2) return; window.__MD_V2 = true;
-  const content = document.querySelector('.project-modal-content'); const cont = document.getElementById('modal-dots'); if(!content||!cont) return;
-  const dotsWrap = cont.querySelector('.dots'); const trails = cont.querySelector('.trails');
-  function build(){ const N=Math.max(8, Math.round(content.clientHeight/28)); dotsWrap.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; dotsWrap.appendChild(s);} }
-  function prog(){ const m=content.scrollHeight-content.clientHeight; return m>0?content.scrollTop/m:0; }
-  let last=-1;
-  function update(){ const dots=dotsWrap.querySelectorAll('.dot'); if(!dots.length) return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
-    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=dotsWrap.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const trail=document.createElement('span'); trail.className='trail'; trail.style.top=y+'px'; trails.appendChild(trail); setTimeout(()=>trail.remove(), 1600); last=idx; } }
-  function init(){ build(); update(); }
-  new ResizeObserver(()=>init()).observe(content);
-  content.addEventListener('scroll', update, {passive:true});
-  const root=content.parentElement||content; const ob=new MutationObserver(()=>{ if(root.classList.contains('open')) init(); }); ob.observe(root,{attributes:true,attributeFilter:['class']});
-  init();
-})();
-</script>
-
-<script>
-// Project data from portogallo.design-main/assets/js/data.js
-    const PROJECTS = {
-      "Gelateria Firenze": {
-        title: "Gelateria Firenze",
-        meta: "Firenze · 2025",
-        cats: ["architettura"],
-        thumb: "assets/images/projects/a/thumb.jpg",
-        desc: `<strong>Firenze 2024 - Progettazione nuova gelateria</strong><br><br>Il concept per il nuovo locale di Barroccino in via del Corso ha alla base la volontà di unire elementi caratterizzanti dell’architettura e stile fiorentino con i suoi materiali e forme.<br>Ciò che contraddistingue Firenze e che porta anche Barroccino nel suo spirito è l’<strong>artigianalità</strong>.<br><br>Se i prodotti e le materie prime per la realizzazione del gelato e dei dolci sono tutti naturali e provengono da una filiera corta e controllata, anche i materiali e i prodotti di cui è fatto il locale dovrebbero essere artigianali e realizzati con materiali del luogo e/o tipici delle realizzazioni a Firenze.<br><br>L’arte e la storia della città non possono meglio che esprimersi con mobili fatti a mano da artigiani locali con materie prime naturali e tradizionali.<br><br>In questo modo è possibile ottenere un luogo attento ai bisogni dell’ecosistema e realizzare un’architettura <strong>ambientale</strong> e <strong>sostenibile</strong>.<br><br>Tutto questo si traduce in un luogo che deve parlare da solo: senza la necessità di un cartello o di una spiegazione, il cliente deve sentirsi in un autentico negozio fiorentino, dove assapora con gli occhi, gli odori e con il palato il gusto e il sapore di ciò che si vende all’interno: un’esperienza di piacere.<br><br>Il progetto per il nuovo locale di Barroccino in via del Corso si può riassumere quindi in 3 parole:<br><strong>AUTENTICO, ARTIGIANALE, AMBIENTALE</strong>.<br>L’esperienza che si vuole regalare al cliente, possa questo essere un turista distratto o un cittadino fiorentino, è quella di entrare in un luogo che c’è sempre stato.<br><br>Link:<br><a href="https://www.instagram.com/barroccinofirenze/" target="_blank" rel="noopener noreferrer">Instagram</a><br><a href="https://gelateriabarroccino.it/" target="_blank" rel="noopener noreferrer">Sito ufficiale</a>`,
-        images: ["assets/images/projects/a/1.jpg", "assets/images/projects/a/2.jpg", "assets/images/projects/a/3.jpg", "assets/images/projects/a/4.jpg", "assets/images/projects/a/5.jpg", "assets/images/projects/a/6.jpg", "assets/images/projects/a/7.jpg", "assets/images/projects/a/8.jpg"]
-      },
-      "New Brand David": {
-        title: "New Brand David",
-        meta: "Firenze · 2023",
-        cats: ["grafica"],
-        thumb: "assets/images/projects/b/thumb.jpg",
-        desc: `<strong>Firenze 2023 - Brand identity e sistema illustrativo</strong><br><br>Cliente internazionale con un nuovo fondo nel centro storico di Firenze: l’obiettivo era creare un marchio iconico, subito riconoscibile e profondamente legato alla città. Il cliente ha scelto il David di Michelangelo come emblema; da questo input ho sviluppato un’illustrazione originale in stile lineare: il David sostituisce la fionda con un cono gelato e strizza l’occhio al pubblico, fondendo ironia e classicità.<br><br>La tipografia accosta un serif autorevole per “DAVID” a un corsivo più leggero per “La Gelateria”, a bilanciare heritage e convivialità. La palette riprende gli interni: rosa polverosi e sfumature calde che tornano su insegna, materiali stampati e contenuti digitali, creando continuità visiva in/outdoor.<br><br>Ho progettato l’intero sistema illustrativo: etichette gusti, menù, listini, cartellonistica, supporti per i monitor e micro-icone. Tutti gli elementi riprendono il tratto a china del logo, così da costruire una linea stilistica unica e riconoscibile.<br><br><strong>Deliverable principali</strong>: logo e insegna, palette e linee guida tipografiche, illustrazioni per menù e bacheca gusti, grafiche per monitor, biglietti e materiali di comunicazione.<br><strong>Risultato</strong>: un’identità coerente, elegante e giocosa che rende il locale immediatamente memorabile per residenti e turisti.<br><br>Link:<br><a href="https://www.google.com/maps/place/David+la+Gelateria/@43.7715218,11.2588435,681m/data=!3m2!1e3!4b1!4m6!3m5!1s0x132a5521bb1ebd35:0x5dea0a3702f2252a!8m2!3d43.771518!4d11.2614184!16s%2Fg%2F11l5b7bgg8?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer">Google Maps Page</a>`,
-        images: ["assets/images/projects/b/1.jpg", "assets/images/projects/b/2.jpg", "assets/images/projects/b/3.jpg", "assets/images/projects/b/4.jpg", "assets/images/projects/b/5.jpg", "assets/images/projects/b/6.jpg"]
-      },
-      "Home* Project": {
-        title: "Home* Project",
-        meta: "Milano · 2018",
-        cats: ["bimai", "architettura"],
-        thumb: "assets/images/projects/c/thumb.jpg",
-        desc: `<strong>Milano 2018 - Progetto di tesi magistrale Politecnico</strong><br><strong>realizzato e pubblicato con Tecla Caroli</strong><br><br><strong>HOME*</strong> è un sistema abitativo modulare per contesti di emergenza, nato da uno studio internazionale sulle migliori pratiche. L’obiettivo è offrire una soluzione <strong>rapida</strong>, <strong>efficiente</strong> ed <strong>evolutiva</strong>, capace di rispondere subito ai bisogni umanitari e di crescere nel tempo.<br><br>Il progetto integra <strong>BIM</strong> e <strong>Life Cycle Assessment (LCA)</strong> in un unico modello informativo completo di dati tecnici, fisici ed economici. Il <strong>BIM</strong> consente il controllo delle scelte a livello di <strong>materiale</strong>, <strong>componente</strong> e <strong>sistema</strong>, la standardizzazione in <strong>famiglie</strong> sostituibili/integrabili e l’estrazione immediata di computi e stime. L’<strong>LCA</strong> misura gli impatti lungo il ciclo di vita — energia, costi ed <strong>emissioni di CO₂</strong> — dai materiali alla logistica fino alla fase d’uso.<br><br><strong>Adattabilità geografica.</strong> Per validarne le prestazioni ambientali, economiche ed energetiche, <strong>HOME*</strong> è stato testato in due scenari opposti: <strong>Amatrice (Italia)</strong> e <strong>Zaatari (Giordania)</strong>.<br><br><strong>Tecnologie e fasi.</strong> Il sistema opera in <strong>due fasi</strong>:<br><strong>Fase 1</strong> — modulo base per <strong>2 persone</strong>, più sicuro di una tenda, <strong>rapidamente montabile/smontabile</strong> e riutilizzabile in configurazioni diverse.<br><strong>Fase 2</strong> — crescita in un organismo abitativo più complesso tramite <strong>assemblaggio a secco</strong> (reversibile e flessibile, ispirato alla ferramenta del mobile) con componenti <strong>standard</strong>, facilmente reperibili e ottimizzati per trasporto, resistenza meccanica e comfort termo-igrometrico.<br><br><strong>Prestazioni ed energia.</strong> L’interoperabilità del modello permette simulazioni con <strong>Termolog</strong> e <strong>CENED+2.0</strong>. La forma compatta e l’involucro ad alte prestazioni riducono i fabbisogni; il sistema può essere reso <strong>energeticamente autosufficiente</strong>. <strong>Vita utile prevista: 30 anni</strong>, estendibile grazie alla riconfigurabilità.<br><br><strong>Economia del progetto.</strong> I dati di costo a livello di componente abilitano computi affidabili e strategie di procurement. A <strong>costi vicini</strong> a quelli di una struttura transizionale, <strong>HOME*</strong> offre una soluzione <strong>più durevole</strong>, <strong>adattabile</strong> e <strong>scalabile</strong>, riducendo sprechi di materiali ed energia.<br><br>In sintesi, <strong>HOME*</strong> unisce <strong>rapidità d’intervento</strong>, <strong>sostenibilità ambientale ed economica</strong> e <strong>dignità dell’abitare</strong>, mettendo al centro le persone e il loro futuro.<br><br>Link:<br><a href="https://www.politesi.polimi.it/handle/10589/141128" target="_blank" rel="noopener noreferrer">Politecnico di Milano</a><br><a href="https://issuu.com/edicomedizioni/docs/la34" target="_blank" rel="noopener noreferrer">LegnoArchitettura n.34 2018</a><br><a href="https://issuu.com/redazioneioarch/docs/issuu_ioa76" target="_blank" rel="noopener noreferrer">IoArch n.76 2018</a>`,
-        images: ["assets/images/projects/c/1.jpg", "assets/images/projects/c/2.jpg", "assets/images/projects/c/3.jpg", "assets/images/projects/c/4.jpg", "assets/images/projects/c/5.jpg", "assets/images/projects/c/6.jpg", "assets/images/projects/c/7.jpg", "assets/images/projects/c/8.jpg"]
-      },
-      "Vaso C.": {
-        title: "Vaso C.",
-        meta: "Napoli · 2025",
-        cats: ["artigianato"],
-        thumb: "assets/images/projects/d/thumb.jpg",
-        desc: `<strong>Napoli 2025 - Terracotta smaltata</strong><br><br>Progetto su commissione per un cliente che desiderava un oggetto a doppia funzione: <strong>scultura da centrotavola</strong> e <strong>vaso</strong> utilizzabile all’occorrenza. Ho scelto il <strong>carciofo</strong> per la sua forza iconica e per la struttura naturale: la testa garantisce una base stabile mentre il <strong>gambo verticale</strong> diventa collo del vaso, capace di guidare e sostenere il bouquet.<br><br>Il volume è <strong>modellato a mano</strong>, con brattee applicate una a una e texture incise per restituire il carattere vegetale. L’interno è continuo e <strong>impermeabilizzato</strong> per contenere l’acqua; all’esterno una stratificazione di ingobbi e <strong>smalti lucidi</strong> crea le variazioni verde-violacee tipiche del carciofo.<br><br>La composizione è studiata per l’<strong>equilibrio</strong>: il piccolo ricciolo del gambo lavora da contro-peso e dà movimento al profilo. Il pezzo è rifinito con <strong>doppia cottura</strong> per resistenza e brillantezza.<br><br>In tavola funziona come <strong>totem domestico</strong> — scultoreo anche a vaso vuoto — e, quando serve, accoglie fiori freschi o secchi grazie al collo stretto e al corpo capiente. Un oggetto unico che unisce <strong>botanica, funzione e decorazione</strong> in un gesto contemporaneo.`,
-        images: ["assets/images/projects/d/1.jpg", "assets/images/projects/d/2.jpg", "assets/images/projects/d/3.jpg", "assets/images/projects/d/4.jpg", "assets/images/projects/d/5.jpg"]
-      },
-      "Wedding M+S": {
-        title: "Wedding M+S",
-        meta: "Amsterdam · 2024",
-        cats: ["grafica", "wedding"],
-        thumb: "assets/images/projects/e/thumb.jpg",
-        desc: `<strong>Amsterdam 2024 - Wedding Invitation e allestimento</strong><br><strong>realizzato con Maddalena Timossi, in collaborazione per Ottagono.Design</strong><br><br><strong>Invito di matrimonio — “Amsterdam, una storia in tre atti”</strong><br><br>I <strong>futuri sposi</strong> desideravano che l’invito non fosse solo un cartoncino con data e indirizzo, ma un <strong>ricordo da conservare</strong>: un frammento della loro storia capace di emozionare chi lo riceve. Davanti a un caffè ci hanno raccontato di <strong>Amsterdam</strong>, della loro prima casa, dei <strong>due cani</strong> che li seguono ovunque, delle ore in cucina — lui ai fornelli, lei con lo zucchero a velo sulle mani. Da quel racconto è nato un invito che è insieme <strong>illustrazione</strong>, <strong>memoria</strong> e <strong>promessa</strong>.<br><br>La scena è la <strong>facciata della loro casa olandese</strong>, disegnata nel blu intenso che richiama la <strong>ceramica di Delft</strong>. L’illustrazione si legge come un racconto in <strong>tre atti</strong>.<br><br><strong>Atto I</strong> — Il nastro annuncia il matrimonio, come una tenda che si apre a teatro.<br><strong>Atto II</strong> — Lei si affaccia alla finestra e piega <strong>origami</strong>, immaginando il futuro; lui, nella finestra sotto, <strong>spadella</strong> con il sorriso. Nei dettagli compaiono i loro cani e piccoli indizi della vita condivisa.<br><strong>Atto III</strong> — La strada si anima e i due partono in <strong>bicicletta</strong> verso il <strong>viaggio di nozze</strong>: leggeri, complici, già proiettati avanti.<br><br>L’invito arriva in una <strong>busta decorata</strong> dentro e fuori, chiusa da <strong>ceralacca blu</strong> e <strong>timbro personalizzato</strong>: un gesto tattile, quasi una carezza. Il racconto prosegue nel giorno delle nozze con il <strong>tableau de mariage</strong> coordinato e con i tavoli dedicati ai <strong>luoghi del cuore</strong> di Amsterdam (cinque in totale).<br><br>A ogni posto, una <strong>gru di carta</strong> portafortuna — le stesse che lei piegava quando lo ha incontrato — e una <strong>cartolina “spedita da Amsterdam”</strong>: sul fronte una tra <strong>10 illustrazioni originali</strong> distribuite a caso, sul retro <strong>francobolli</strong> e <strong>menù della cena</strong> al posto del testo.<br><br><strong>Risultato</strong> — Un sistema delicato e coerente che unisce <strong>racconto personale</strong> e <strong>cura artigianale</strong>, trasformando invito e allestimento in un’esperienza da <strong>sfogliare</strong>, <strong>toccare</strong> e <strong>custodire</strong>.`,
-        images: ["assets/images/projects/e/1.jpg", "assets/images/projects/e/2.jpg", "assets/images/projects/e/3.jpg", "assets/images/projects/e/4.jpg", "assets/images/projects/e/5.jpg"]
-      },
-      "Concept Villa Dubai": {
-        title: "Concept Villa Dubai",
-        meta: "Milano · 2023",
-        cats: ["architettura", "bimai"],
-        thumb: "assets/images/projects/f/thumb.jpg",
-        desc: `<strong>Milano 2023 - Concorso internazionale Dubai</strong><br><strong>realizzato con Tecla Caroli</strong><br><br>Progetto presentato per un <strong>nuovo quartiere residenziale di lusso</strong> a Dubai, su lotto con <strong>dimensioni e funzioni prestabilite</strong>. Obiettivo: una villa contemporanea che unisca <strong>comfort</strong>, <strong>identità locale</strong> e <strong>sostenibilità</strong> ambientale, energetica ed economica.<br><br><strong>Concept</strong><br>Volumi bianchi compatti, scavati da <strong>archi</strong> e <strong>oculi</strong>, dialogano con una grande parete filtrante in laterizio ispirata alla <strong>mashrabiya</strong>: uno schermo poroso che offre <strong>privacy</strong>, controllo dell’abbagliamento e ventilazione. Tra interno ed esterno si alternano <strong>patio</strong>, <strong>loggia</strong> e <strong>pergola</strong>, microclimi ombreggiati che estendono la vita all’aperto tutto l’anno.<br><br><strong>Distribuzione</strong><br>Piano terra con <strong>spazi giorno</strong> (doppia altezza), cucina e ambienti di servizio, oltre al <strong>garage</strong>.<br>Primo piano con <strong>camere</strong> e bagni en-suite, <strong>studio</strong> e affacci su <strong>vuoti interni</strong> protetti. La facciata materica con <strong>rampicanti</strong> contribuisce al raffrescamento evaporativo e riduce l’irraggiamento diretto.<br><br><strong>Metodo & Tecnologie</strong><br>Sviluppo integrale in <strong>BIM</strong> per coordinare discipline, verificare prestazioni e integrare <strong>costi/tempi</strong> sin dalle prime fasi. Strategie ambientali: <strong>orientamento</strong> e schermature passive, <strong>ventilazione incrociata</strong>, tetto con <strong>fotovoltaico</strong>, <strong>lucernario</strong> per luce zenitale controllata, <strong>recupero dell’acqua piovana</strong> e riuso delle <strong>acque grigie</strong> per irrigazione. Materiali locali e soluzioni a <strong>bassa manutenzione</strong> per ridurre il ciclo di vita economico e ambientale.<br><br><strong>Valore</strong><br>VILLA F mette al centro <strong>le persone</strong> (benessere e qualità dell’abitare), il <strong>pianeta</strong> (riduzione di consumi ed emissioni) e il <strong>profitto</strong> (gestione efficiente delle risorse), offrendo una casa iconica ma misurata, radicata nel clima e nella cultura del luogo.`,
-        images: ["assets/images/projects/f/1.jpg", "assets/images/projects/f/2.jpg", "assets/images/projects/f/3.jpg", "assets/images/projects/f/4.jpg", "assets/images/projects/f/5.jpg"]
-      },
-      "Wedding C+G": {
-        title: "Wedding C+G",
-        meta: "Firenze · 2024",
-        cats: ["grafica", "wedding"],
-        thumb: "assets/images/projects/g/thumb.jpg",
-        desc: `<strong>Firenze 2024 - Wedding Invitation e allestimento</strong><br><strong>realizzato con Maddalena Timossi, in collaborazione per Ottagono.Design</strong><br><br><strong>“NAPOLENZEWOOD”</strong><br><br>Due ragazzi, un <strong>fiorentino</strong> e un <strong>napoletano</strong>, si incontrano il <strong>29 febbraio 2020</strong>. Dopo la tempesta del Covid si spostano a Firenze e, quattro anni più tardi — ancora il <strong>29 febbraio 2024</strong> — si promettono per sempre. Non tutta la famiglia biologica approvava quelle nozze <strong>LGBTQ+</strong>, così hanno scelto di sposarsi con la loro <strong>famiglia elettiva</strong>: amici, parenti vicini e lontanissimi, le persone che hanno saputo dire “sì” prima di chiunque altro.<br><br>L’invito si apre su <strong>NAPOLENZEWOOD</strong>, una città immaginaria dove <strong>Napoli</strong> e <strong>Firenze</strong> si abbracciano: cupole e castelli, vicoli e lungarni che custodiscono i loro luoghi del cuore. Poi, come per magia, il <strong>pop-up</strong> porta in primo piano il loro nido: la casa, i vasi di fiori, la <strong>weimaraner</strong> e la <strong>gatta</strong>. E loro due in versione teneramente antropomorfa: il <strong>Riccio architetto</strong>, con in mano il progetto del futuro, e l’<strong>Orso pasticcere</strong>, intento a preparare la torta di nozze. Un invito che non informa soltanto: <strong>racconta</strong>, <strong>accoglie</strong>, <strong>commuove</strong>.<br><br>Le buste sono partite per il mondo intero, raggiungendo ogni membro di quella famiglia scelta. Nel giorno delle nozze, il <strong>tableau de mariage</strong> è diventato una NAPOLENZEWOOD in grande scala: dalle case spuntavano i posti a sedere, ognuna intitolata a <strong>figure e icone</strong> che hanno illuminato la cultura e la comunità LGBTQ+. La sala si è trasformata in città: ogni tavolo aveva la sua <strong>casa illustrata</strong> e, sul retro, un racconto dedicato al personaggio che le dava il nome.<br><br>A ogni posto, una <strong>cartolina</strong>: davanti la città immaginaria, dietro il <strong>menù</strong> narrato come <strong>capitoli del “Le Petit Prince”</strong> — il loro libro del cuore — con i nomi degli invitati <strong>scritti a mano</strong>, completi di indirizzo e città immaginari. Tutto, in questo progetto, è stato pensato per dire una sola cosa: <strong>l’amore trova sempre la sua forma</strong>. Unica, gentile, irripetibile. Come loro.`,
-        images: ["assets/images/projects/g/1.jpg", "assets/images/projects/g/2.jpg", "assets/images/projects/g/3.jpg", "assets/images/projects/g/4.jpg", "assets/images/projects/g/5.jpg"]
-      },
-       "About me": {
-        title: "About me",
-        meta: "Firenze · 1993",
-        cats: ["about"],
-        thumb: "assets/images/projects/i/thumb.jpg",
-        desc: `<strong>Architetto. Designer. Illustratore. Henro - 遍路.</strong><br>Tanti volti, un unico percorso.<br><br><strong>Sono Claudio Portogallo</strong>. Progetto con la testa e con le mani.<br>Sono <strong>architetto</strong>, <strong>designer</strong> e un po'<strong>artigiano</strong>: mi occupo di progettazione e sono <strong>BIM Coordinator</strong> con lo studio internazionale <strong>Archea Associati</strong> di Firenze; in parallelo seguo lavori indipendenti di architettura e di interni.<br>Sono anche fiero <strong>Henro</strong> — pellegrino del cammino di Shikoku: un pezzo di me che mi permette di portare nel lavoro la pazienza del viaggio, un passo alla volta.<br><br>Nell’atelier <strong>Ottagono.Artspace</strong> sperimento con <strong>ceramica</strong>, <strong>legno</strong>, <strong>carta</strong> e <strong>illustrazione</strong>: qui la materia mi rimette a terra e la fantasia mi spinge a sperimentare con grande libertà.<br>Amo l’arte e lavoro anche con l’<strong>intelligenza artificiale</strong>, che uso ogni giorno come taccuino di ricerca visiva e come spinta per uscire dai binari dell’ordinario.<br>Non amo definirmi “artista”: preferisco costruire, pezzo dopo pezzo, immagini e spazi che parlano chiaro, rispettano <strong>tempi e budget</strong> e — soprattutto — fanno stare bene chi li abita.<br><br><strong>Cosa faccio</strong><br>• <strong>Architettura & Interni</strong> — grandi edifici, abitazioni, retail, hospitality; concept, dettaglio e cantiere.<br>• <strong>Design su misura</strong> — arredi e oggetti unici, prototipazione rapida.<br>• <strong>Grafica & Illustrazione</strong> — biglietti e inviti che raccontano storie, identità di luoghi, sistemi illustrati.<br>• <strong>BIM</strong> — modellazione, coordinamento, standard, qualità.<br><br><strong>Metodo</strong><br><strong>Ascolto</strong> → <strong>Idea condivisa</strong> → <strong>Prototipo/Mockup</strong> → <strong>Consegna curata nel dettaglio</strong><br><strong>I miei valori</strong>: chiarezza • rispetto di tempi e budget • artigianalità<br><br><strong>Collaborazioni & Strumenti</strong><br><strong>Archea Associati</strong> (BIM Coordinator, Architetto Progettista).<br><strong>Ottagono.Artspace</strong> (atelier).<br><strong>Revit/BIM</strong>, suite grafica, ceramica/legno/carta, <strong>AI</strong>.<br><br><br><br><strong>Hai un’idea?</strong> Parliamone: la disegniamo, la testiamo, la realizziamo.<br><br>`,
-        images: ["assets/images/projects/i/1.jpg", "assets/images/projects/i/2.jpg", "assets/images/projects/i/3.jpg", "assets/images/projects/i/4.jpg", "assets/images/projects/i/5.jpg"]
-      }
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Parallax effect
-      const layerBg = document.getElementById('layer-bg');
-      const layerShapes = document.getElementById('layer-shapes');
-      const layerContent = document.getElementById('layer-content');
-      const scrollIndicator = document.getElementById('scroll-indicator');
-
-      window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY;
-        if(layerBg) layerBg.style.transform = `translateY(${scrollY * 0.3}px)`;
-        if(layerShapes) layerShapes.style.transform = `translateY(${scrollY * 0.5}px)`;
-        if(layerContent) layerContent.style.transform = `translateY(${scrollY * 0.1}px)`;
-        if(scrollIndicator) scrollIndicator.style.opacity = Math.max(0, 1 - scrollY / 300);
-      });
-
-      // Floating navigation scroll effect
-      const nav = document.getElementById('floating-nav');
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 100) {
-          nav.classList.remove('opacity-90', 'translate-y-2');
-          nav.classList.add('opacity-100', 'translate-y-0');
-        } else {
-          nav.classList.add('opacity-90', 'translate-y-2');
-          nav.classList.remove('opacity-100', 'translate-y-0');
-        }
-      });
-      
-      // Fade in on scroll for About section
-      const aboutSection = document.getElementById('about');
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('animate-fade-in');
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-      
-      const elementsToFade = aboutSection.querySelectorAll('.fade-in-element');
-      elementsToFade.forEach((el) => observer.observe(el));
-
-
-      // Populate Project Grid
-      const projectGrid = document.getElementById('project-grid-container');
-      const modal = document.getElementById('project-modal');
-      const modalClose = document.getElementById('project-modal-close');
-      const sheetMedia = document.getElementById('sheetMedia');
-      const sheetTitle = document.getElementById('sheetTitle');
-      const sheetDesc = document.getElementById('sheetDesc');
-      // ====== Scroll dots for modal ======
-      const modalContent = document.querySelector('.project-modal-content');
-      const dotsContainer = document.getElementById('modal-dots');
-      const DOTS = 11;
-      function buildDots(){
-        if(!dotsContainer) return;
-        dotsContainer.innerHTML = '';
-        for(let i=0;i<DOTS;i++){
-          const s = document.createElement('span');
-          s.className = 'dot';
-          dotsContainer.appendChild(s);
-        }
-      }
-      function updateDots(){
-        if(!dotsContainer || !modalContent) return;
-        const dots = dotsContainer.querySelectorAll('.dot');
-        const maxScroll = modalContent.scrollHeight - modalContent.clientHeight;
-        const progress = maxScroll > 0 ? (modalContent.scrollTop / maxScroll) : 0;
-        const idx = Math.max(0, Math.min(DOTS-1, Math.round(progress * (DOTS-1))));
-        dots.forEach((d,i)=> d.classList.toggle('active', i === idx));
-      }
-      if (modalContent){
-        modalContent.addEventListener('scroll', updateDots, {passive:true});
-        modalContent.addEventListener('wheel', updateDots, {passive:true});
-      }
-      buildDots();
-
-      
-      Object.entries(PROJECTS).forEach(([key, project], index) => {
-        const card = document.createElement('div');
-        card.className = 'project-card group';
-        card.dataset.cats = project.cats.join(' ').toLowerCase();
-        card.style.animationDelay = `${index * 0.1}s`;
-        
-        card.innerHTML = `
-          <div class="aspect-square overflow-hidden">
-            <img src="${project.thumb}" alt="${project.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-          </div>
-          <div class="absolute bottom-0 left-0 right-0 p-6 text-cream-white z-20 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-            <div class="mb-2"><span class="text-xs tracking-widest text-white uppercase">${project.cats.join(' & ')}</span></div>
-            <h3 class="text-xl font-bold mb-1 text-white">${project.title}</h3>
-            <p class="text-sm text-white">${project.meta}</p>
-          </div>
-        `;
-        
-        card.addEventListener('click', () => {
-          sheetTitle.textContent = project.title;
-          sheetDesc.innerHTML = project.desc;
-          sheetMedia.innerHTML = '';
-          project.images.forEach(imgSrc => {
-            const img = document.createElement('img');
-            img.src = imgSrc;
-            img.alt = project.title;
-            sheetMedia.appendChild(img);
-          });
-          modal.classList.add('open');
-          if (typeof buildDots==='function'){ buildDots(); updateDots(); }
-          buildDots();
-          updateDots();
-          document.body.style.overflow = 'hidden';
-        });
-        
-        projectGrid.appendChild(card);
-      });
-
-      modalClose.addEventListener('click', () => {
-          modal.classList.remove('open');
-          document.body.style.overflow = 'auto';
-      });
-
-      modal.addEventListener('click', (e) => {
-          if (e.target === modal) {
-              modal.classList.remove('open');
-              document.body.style.overflow = 'auto';
-          }
-      });
-      
-      // Populate About me text
-      const aboutTextContainer = document.getElementById('about-text');
-      if (PROJECTS['About me'] && PROJECTS['About me'].desc) {
-          aboutTextContainer.innerHTML = PROJECTS['About me'].desc.replace(/
-/g, '<br>');
-      }
-
-    });
-  
-      // === About me: mouse repulsion (desktop only) ===
-      (function(){
-        const about = document.getElementById('about');
-        const isTouch = matchMedia('(pointer: coarse)').matches;
-        if (!about || isTouch) return;
-        const imgs = about.querySelectorAll('.photo-wrap img, .about-float');
-        about.addEventListener('mousemove', (e)=>{
-          const rect = about.getBoundingClientRect();
-          const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
-          imgs.forEach(img=>{
-            const r = img.getBoundingClientRect();
-            const ix = (r.left + r.right)/2 - rect.left;
-            const iy = (r.top + r.bottom)/2 - rect.top;
-            const dx = ix - cx, dy = iy - cy;
-            const dist = Math.hypot(dx, dy) || 1;
-            const force = Math.min(12, 90/dist);
-            img.style.transform = `translate(${(dx/dist)*force}px, ${(dy/dist)*force}px)`;
-          });
-        });
-        about.addEventListener('mouseleave', ()=> imgs.forEach(img=> img.style.transform=''));
-      })();
-
-  // === Rollover logic ===
-(function(){
-  const ro = document.getElementById('rollover');
-  if (!ro) return;
-  const first = !sessionStorage.getItem('rolloverDone');
-  if (!first){
-    ro.classList.add('hide');
-    setTimeout(()=>{ ro.style.display='none'; }, 50);
-    return;
-  }
-  window.addEventListener('load', ()=>{
-    setTimeout(()=>{
-      ro.classList.add('hide');
-      setTimeout(()=>{ ro.style.display='none'; }, 700);
-    }, 900);
-    sessionStorage.setItem('rolloverDone','1');
-  });
-})();
-// === Filtro categorie + helper per segnalibri/sottomenu ===
-(function(){
-  const filterBar = document.getElementById('project-filter');
-
-  function getCards(){
-    const a = Array.from(document.querySelectorAll('.project-card'));
-    const b = Array.from(document.querySelectorAll('[data-cats]'));
-    return Array.from(new Set([...a, ...b]));
-  }
-
-  window.applyFilter = function(cat){
-    getCards().forEach(c=>{
-      const cats=(c.dataset.cats||'').split(' ').filter(Boolean);
-      const show=(cat==='all')?true:cats.includes(cat);
-      c.classList.toggle('hidden', !show);
-    });
-  };
-
-  function setActive(btn){
-    if(!filterBar) return;
-    filterBar.querySelectorAll('.filter-btn').forEach(b=>b.setAttribute('aria-pressed','false'));
-    if(btn) btn.setAttribute('aria-pressed','true');
-  }
-
-  if (filterBar){
-    const first = filterBar.querySelector('[data-cat="all"]');
-    if (first){ setActive(first); window.applyFilter('all'); }
-    filterBar.addEventListener('click',(e)=>{
-      const btn = e.target.closest('.filter-btn'); if(!btn) return;
-      const cat = btn.getAttribute('data-cat'); setActive(btn); window.applyFilter(cat);
-    });
-  }
-
-  window.applyFilterFromMenu=function(cat){
-  const fb=document.getElementById('project-filter');
-  const b=(fb&&(fb.querySelector(`[data-cat="${cat}"]`)||fb.querySelector('[data-cat="all"]')));
-  if(b){ b.click(); } else if(typeof window.applyFilter==='function'){ window.applyFilter(cat); }
-  // NON scrollare la vista (mantieni "Lavori selezionati" a vista)
-};
-})();
-
-// site dots
-(function(){
-  const w=document.getElementById('site-scroll-dots'); if(!w) return;
-  const d=w.querySelector('.dots'), t=w.querySelector('.trails'); const N=13; let last=-1;
-  function build(){ d.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; d.appendChild(s); } }
-  function prog(){ const h=document.documentElement; const m=h.scrollHeight-h.clientHeight; return m>0? (h.scrollTop/m) : 0; }
-  function upd(){
-    const p=prog(); const dots=d.querySelectorAll('.dot');
-    const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1))));
-    dots.forEach((e,i)=> e.classList.toggle('active', i===idx));
-    if(idx!==last && dots[idx]){
-      const r=dots[idx].getBoundingClientRect(); const rw=d.getBoundingClientRect();
-      const y=r.top-rw.top + r.height/2 - 3; const tr=document.createElement('span'); tr.className='trail';
-      tr.style.top = y+'px'; tr.style.left='4px'; t.appendChild(tr); setTimeout(()=>tr.remove(), 1900); last=idx;
-    }
-  }
-  build(); upd(); window.addEventListener('scroll', upd, {passive:true}); window.addEventListener('resize', ()=>{build(); upd();}, {passive:true});
-})();
-
-
-// modal dots
-(function(){
+  if (window.__MD_CLEAN) return; window.__MD_CLEAN = true;
   const c=document.querySelector('.project-modal-content'); const k=document.getElementById('modal-dots'); if(!c||!k) return;
-  const d=k.querySelector('.dots'), t=k.querySelector('.trails'); const N=11; let last=-1;
-  function build(){ d.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; d.appendChild(s);} }
-  function prog(){ const m=c.scrollHeight-c.clientHeight; return m>0? (c.scrollTop/m) : 0; }
-  function upd(){
-    const p=prog(); const dots=d.querySelectorAll('.dot');
-    const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1))));
-    dots.forEach((e,i)=> e.classList.toggle('active', i===idx));
-    if(idx!==last && dots[idx]){
-      const r=dots[idx].getBoundingClientRect(); const rw=d.getBoundingClientRect();
-      const y=r.top-rw.top + r.height/2 - 3; const tr=document.createElement('span'); tr.className='trail';
-      tr.style.top=y+'px'; tr.style.left='4px'; t.appendChild(tr); setTimeout(()=>tr.remove(), 1900); last=idx;
-    }
-  }
-  function open(){ build(); upd(); }
-  c.addEventListener('scroll', upd, {passive:true}); c.addEventListener('wheel', upd, {passive:true});
-  const root=c.parentElement||c; const ob=new MutationObserver(()=>{ if(root.classList.contains('open')) open(); });
-  ob.observe(root,{attributes:true,attributeFilter:['class']}); open();
+  const d=k.querySelector('.dots'), t=k.querySelector('.trails');
+  function build(){ const N=Math.max(8, Math.round(c.clientHeight/28)); d.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; d.appendChild(s);} }
+  function prog(){ const m=c.scrollHeight-c.clientHeight; return m>0?c.scrollTop/m:0; }
+  let last=-1;
+  function upd(){ const dots=d.querySelectorAll('.dot'); if(!dots.length)return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((e,i)=>e.classList.toggle('active', i===idx));
+    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=d.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const tr=document.createElement('span'); tr.className='trail'; tr.style.top=y+'px'; t.appendChild(tr); setTimeout(()=>tr.remove(),1600); last=idx; } }
+  const go=()=>{ build(); upd(); }; go();
+  new ResizeObserver(()=>go()).observe(c); c.addEventListener('scroll', upd, {passive:true});
+  const root=c.parentElement||c; new MutationObserver(()=>{ if(root.classList.contains('open')) go(); }).observe(root,{attributes:true,attributeFilter:['class']});
 })();
 </script>
 
