@@ -30,7 +30,39 @@
         about.addEventListener('mouseleave', ()=> imgs.forEach(img=> img.style.transform=''));
       })();
 
-  </script>
+  
+// Site dots (single instance & trail)
+(function(){
+  if (window.__SD_V2) return; window.__SD_V2 = true;
+  const wrap = document.getElementById('site-scroll-dots'); if(!wrap) return;
+  const dotsWrap = wrap.querySelector('.dots'); const trails = wrap.querySelector('.trails');
+  function build(){ const N = Math.max(10, Math.round(window.innerHeight/28)); dotsWrap.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; dotsWrap.appendChild(s);} }
+  function prog(){ const h=document.documentElement; const m=h.scrollHeight-h.clientHeight; return m>0?h.scrollTop/m:0; }
+  let last=-1;
+  function update(){ const dots=dotsWrap.querySelectorAll('.dot'); if(!dots.length) return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
+    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=dotsWrap.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const trail=document.createElement('span'); trail.className='trail'; trail.style.top=y+'px'; trails.appendChild(trail); setTimeout(()=>trail.remove(), 1800); last=idx; } }
+  function init(){ build(); update(); }
+  init(); window.addEventListener('resize', init, {passive:true}); window.addEventListener('scroll', update, {passive:true});
+})();
+
+// Modal dots (single instance & trail)
+(function(){
+  if (window.__MD_V2) return; window.__MD_V2 = true;
+  const content = document.querySelector('.project-modal-content'); const cont = document.getElementById('modal-dots'); if(!content||!cont) return;
+  const dotsWrap = cont.querySelector('.dots'); const trails = cont.querySelector('.trails');
+  function build(){ const N=Math.max(8, Math.round(content.clientHeight/28)); dotsWrap.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; dotsWrap.appendChild(s);} }
+  function prog(){ const m=content.scrollHeight-content.clientHeight; return m>0?content.scrollTop/m:0; }
+  let last=-1;
+  function update(){ const dots=dotsWrap.querySelectorAll('.dot'); if(!dots.length) return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
+    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=dotsWrap.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const trail=document.createElement('span'); trail.className='trail'; trail.style.top=y+'px'; trails.appendChild(trail); setTimeout(()=>trail.remove(), 1800); last=idx; } }
+  function init(){ build(); update(); }
+  new ResizeObserver(()=>init()).observe(content);
+  content.addEventListener('scroll', update, {passive:true});
+  const root=content.parentElement||content; const ob=new MutationObserver(()=>{ if(root.classList.contains('open')) init(); }); ob.observe(root,{attributes:true,attributeFilter:['class']});
+  init();
+})();
+
+</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -345,10 +377,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0 !important; height: 
 .map-square > iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; filter:grayscale(1) contrast(1.45) brightness(.95); }
 @media (max-width:768px){ .map-square{ width:70%; } }
 
-  </style>
-<style>
-
-/* Hide native scrollbars */
+  
+/* Hide native scrollbars (page + modal) */
 html, body { scrollbar-width:none; }
 html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!important; display:none; }
 .project-modal-content { scrollbar-width:none; -ms-overflow-style:none; }
@@ -360,7 +390,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
 .site-scroll-dots .dot{ width:6px; height:6px; border-radius:9999px; background:rgba(180,180,180,.6); transition:transform .15s ease, background-color .15s ease; }
 .site-scroll-dots .dot.active{ background:#0b0b0c; transform:scale(1.1); }
 .site-scroll-dots .trails{ position:absolute; inset:0; pointer-events:none; height:calc(100vh - 32px); }
-.site-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation:siteTrail 1.6s ease-out forwards; left:4px; }
+.site-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation: siteTrail 1.8s ease-out forwards; left:4px; }
 @keyframes siteTrail{ 0%{opacity:.75; transform:scale(1)} 100%{opacity:0; transform:scale(.85)} }
 @media (max-width:768px){ .site-scroll-dots{ right:8px } }
 
@@ -370,20 +400,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
 .modal-scroll-dots .dot{ width:6px; height:6px; border-radius:9999px; background:rgba(180,180,180,.6); transition:transform .15s ease, background-color .15s ease; }
 .modal-scroll-dots .dot.active{ background:#0b0b0c; transform:scale(1.1); }
 .modal-scroll-dots .trails{ position:absolute; inset:0; pointer-events:none; height:calc(100% - 24px); }
-.modal-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation:modalTrail 1.6s ease-out forwards; left:4px; }
+.modal-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation: modalTrail 1.8s ease-out forwards; left:4px; }
 @keyframes modalTrail{ 0%{opacity:.75; transform:scale(1)} 100%{opacity:0; transform:scale(.85)} }
 
-/* Contact: map left with text right, square */
+/* Contact: map left with text on right, square */
 #contact{ position:relative; }
-#contact::after{ content:''; display:block; clear:both; }
+#contact::after{ content:''; display:block; clear:both; } /* clearfix */
 #contact .map-wrap{ float:left; width:min(680px, 48vw); margin:0 40px 24px 0; border-radius:16px; overflow:hidden; box-shadow:0 10px 24px rgba(0,0,0,.12); }
 #contact .map-square{ position:relative; width:100%; margin:0; }
-#contact .map-square::before{ content:''; display:block; padding-top:100%; }
+#contact .map-square::before{ content:''; display:block; padding-top:100%; } /* 1:1 */
 #contact .map-square > iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; filter:grayscale(1) contrast(1.45) brightness(.95); }
 @media (max-width:1024px){ #contact .map-wrap{ width:60vw; max-width:640px; } }
 @media (max-width:768px){ #contact .map-wrap{ float:none; width:90%; margin:0 auto 24px auto; } }
 
-</style>
+  </style>
 </head>
 <body class="bg-cream-white">
 
@@ -392,6 +422,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
   <div class="dots"></div>
   <div class="trails"></div>
 </div>
+
 
 
 <!-- Site scroll dots -->
@@ -584,11 +615,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
   <!-- Project Modal -->
   <div id="project-modal" class="project-modal">
       <div class="project-modal-content">
-<!-- Modal scroll dots (clean) inside modal -->
-<div id="modal-dots" class="modal-scroll-dots">
-  <div class="dots"></div>
-  <div class="trails"></div>
-</div>
+<!-- Modal scroll dots (clean) -->
+<div id="modal-dots" class="modal-scroll-dots"><div class="dots"></div><div class="trails"></div></div>
 <div class="trails"></div></div>
           <button class="project-modal-close" id="project-modal-close">&times;</button>
           <div class="sheet-media" id="sheetMedia"></div>
@@ -601,79 +629,5 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!i
 
 
   
-
-<script>
-// Robust Rollover: never block; DOMContentLoaded or Load (whichever first), plus hard fallback
-(function(){
-  if (window.__ROLLOVER_V2) return; window.__ROLLOVER_V2 = true;
-  const ro = document.getElementById('rollover');
-  if (!ro) return;
-
-  const firstVisit = !sessionStorage.getItem('rolloverDone');
-  function hideNow(delay){
-    setTimeout(()=>{
-      ro.classList.add('hide');
-      setTimeout(()=>{ ro.style.display='none'; }, 600);
-    }, delay);
-  }
-
-  if (!firstVisit){
-    hideNow(0);
-    return;
-  }
-
-  let done = false;
-  function once(){ if (done) return; done = true; hideNow(400); sessionStorage.setItem('rolloverDone','1'); }
-
-  // Fire on DOM ready
-  if (document.readyState === 'interactive' || document.readyState === 'complete'){
-    once();
-  } else {
-    document.addEventListener('DOMContentLoaded', once, {once:true});
-  }
-  // Also fire on window load (in case DOMContentLoaded somehow missed)
-  window.addEventListener('load', once, {once:true});
-  // Hard fallback after 3.5s from DOM start
-  setTimeout(once, 3500);
-})();
-</script>
-
-
-<script>
-// Site dots (single instance & single trail)
-(function(){
-  if (window.__SD_V2) return; window.__SD_V2 = true;
-  const wrap = document.getElementById('site-scroll-dots'); if(!wrap) return;
-  const dotsWrap = wrap.querySelector('.dots'); const trails = wrap.querySelector('.trails');
-  function build(){ const N = Math.max(10, Math.round(window.innerHeight/28)); dotsWrap.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; dotsWrap.appendChild(s);} }
-  function prog(){ const h=document.documentElement; const m=h.scrollHeight-h.clientHeight; return m>0?h.scrollTop/m:0; }
-  let last=-1;
-  function update(){ const dots=dotsWrap.querySelectorAll('.dot'); if(!dots.length) return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
-    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=dotsWrap.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const trail=document.createElement('span'); trail.className='trail'; trail.style.top=y+'px'; trails.appendChild(trail); setTimeout(()=>trail.remove(), 1600); last=idx; } }
-  function init(){ build(); update(); }
-  init(); window.addEventListener('resize', init, {passive:true}); window.addEventListener('scroll', update, {passive:true});
-})();
-</script>
-
-
-<script>
-// Modal dots (single instance & single trail)
-(function(){
-  if (window.__MD_V2) return; window.__MD_V2 = true;
-  const content = document.querySelector('.project-modal-content'); const cont = document.getElementById('modal-dots'); if(!content||!cont) return;
-  const dotsWrap = cont.querySelector('.dots'); const trails = cont.querySelector('.trails');
-  function build(){ const N=Math.max(8, Math.round(content.clientHeight/28)); dotsWrap.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; dotsWrap.appendChild(s);} }
-  function prog(){ const m=content.scrollHeight-content.clientHeight; return m>0?content.scrollTop/m:0; }
-  let last=-1;
-  function update(){ const dots=dotsWrap.querySelectorAll('.dot'); if(!dots.length) return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
-    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=dotsWrap.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const trail=document.createElement('span'); trail.className='trail'; trail.style.top=y+'px'; trails.appendChild(trail); setTimeout(()=>trail.remove(), 1600); last=idx; } }
-  function init(){ build(); update(); }
-  new ResizeObserver(()=>init()).observe(content);
-  content.addEventListener('scroll', update, {passive:true});
-  const root=content.parentElement||content; const ob=new MutationObserver(()=>{ if(root.classList.contains('open')) init(); }); ob.observe(root,{attributes:true,attributeFilter:['class']});
-  init();
-})();
-</script>
-
 </body>
 </html>
