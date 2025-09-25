@@ -346,12 +346,52 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0 !important; height: 
 @media (max-width:768px){ .map-square{ width:70%; } }
 
   </style>
+<style id="patch-v3plus">
+
+/* v3plus patch: reset margins to remove top band */
+html, body { margin:0; }
+
+/* hide native scrollbars */
+html, body { scrollbar-width:none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { width:0!important; height:0!important; display:none; }
+.project-modal-content { scrollbar-width:none; -ms-overflow-style:none; }
+.project-modal-content::-webkit-scrollbar { width:0!important; height:0!important; display:none; }
+
+/* dots page */
+.site-scroll-dots{ position:fixed; right:12px; top:0; bottom:0; height:100vh; transform:none; z-index:999; pointer-events:none; display:flex; align-items:center; }
+.site-scroll-dots .dots{ display:flex; flex-direction:column; justify-content:space-between; gap:0; height:calc(100vh - 32px); position:relative; }
+.site-scroll-dots .dot{ width:6px; height:6px; border-radius:9999px; background:rgba(180,180,180,.6); transition:transform .15s ease, background-color .15s ease; }
+.site-scroll-dots .dot.active{ background:#0b0b0c; transform:scale(1.1); }
+.site-scroll-dots .trails{ position:absolute; inset:0; pointer-events:none; height:calc(100vh - 32px); }
+.site-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation:siteTrail 1.6s ease-out forwards; left:4px; }
+@keyframes siteTrail{ 0%{opacity:.75; transform:scale(1)} 100%{opacity:0; transform:scale(.85)} }
+
+/* dots modal */
+.modal-scroll-dots{ position:absolute; right:10px; top:0; bottom:0; transform:none; width:14px; z-index:5; pointer-events:none; }
+.modal-scroll-dots .dots{ display:flex; flex-direction:column; justify-content:space-between; gap:0; height:calc(100% - 24px); position:relative; }
+.modal-scroll-dots .dot{ width:6px; height:6px; border-radius:9999px; background:rgba(180,180,180,.6); transition:transform .15s ease, background-color .15s ease; }
+.modal-scroll-dots .dot.active{ background:#0b0b0c; transform:scale(1.1); }
+.modal-scroll-dots .trails{ position:absolute; inset:0; pointer-events:none; height:calc(100% - 24px); }
+.modal-scroll-dots .trail{ position:absolute; width:6px; height:6px; border-radius:9999px; background:#0b0b0c; opacity:.75; animation:modalTrail 1.6s ease-out forwards; left:4px; }
+@keyframes modalTrail{ 0%{opacity:.75; transform:scale(1)} 100%{opacity:0; transform:scale(.85)} }
+
+/* contact map right, small, square, b/w */
+#contact{ position:relative; }
+#contact::after{ content:''; display:block; clear:both; }
+#contact .map-wrap{ float:right; width:min(420px, 36vw); margin:0 0 20px 28px; border-radius:16px; overflow:hidden; box-shadow:0 10px 24px rgba(0,0,0,.12); }
+#contact .map-square{ position:relative; width:100%; margin:0; }
+#contact .map-square::before{ content:''; display:block; padding-top:100%; }
+#contact .map-square > iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; filter:grayscale(1) contrast(1.45) brightness(.95); }
+@media (max-width:768px){ #contact .map-wrap{ float:none; width:90%; margin:0 auto 20px auto; } }
+
+</style>
 </head>
 <body class="bg-cream-white">
+<div id="site-scroll-dots" class="site-scroll-dots" aria-hidden="true"><div class="dots"></div><div class="trails"></div></div>
+
 
 <!-- Site scroll dots -->
-<div id="site-scroll-dots" class="site-scroll-dots" aria-hidden="true">
-  <div class="dots"></div>
+
   <div class="trails"></div>
 </div>
 
@@ -507,7 +547,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0 !important; height: 
             <div class="rounded-2xl overflow-hidden shadow-deep">
               <div class="map-wrap"><div class="map-square"><iframe
                 title="Mappa - Portogallo.Design"
-                src="https://www.google.com/maps?q=Firenze%2C+Italia&output=embed"
+                src="https://www.google.com/maps?q=Viuzzo%20del%20Roncolino%206%20Firenze&output=embed"
                 width="100%" height="360" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
               </iframe></div></div>
             </div>
@@ -539,7 +579,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0 !important; height: 
 
   <!-- Project Modal -->
   <div id="project-modal" class="project-modal">
-      <div class="project-modal-content"><div id="modal-dots" class="modal-scroll-dots"><div class="dots"></div><div class="trails"></div></div>
+      <div class="project-modal-content"><div id="modal-dots" class="modal-scroll-dots"><div class="dots"></div><div class="trails"></div></div><div class="trails"></div></div>
           <button class="project-modal-close" id="project-modal-close">&times;</button>
           <div class="sheet-media" id="sheetMedia"></div>
           <aside class="sheet-meta mt-8">
@@ -969,6 +1009,51 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0 !important; height: 
   const obs = new MutationObserver(()=>{ if(root.classList.contains('open')) init(); });
   obs.observe(root, {attributes:true, attributeFilter:['class']});
   init();
+})();
+
+</script>
+<script>
+
+(function(){
+  if (window.__ROLLOVER_V3PLUS) return; window.__ROLLOVER_V3PLUS = true;
+  const ro = document.getElementById('rollover'); if(!ro) return;
+  const first = !sessionStorage.getItem('rolloverDone');
+  function hide(delay){ setTimeout(()=>{ ro.classList.add('hide'); setTimeout(()=>{ ro.style.display='none'; }, 600); }, delay); }
+  if(!first){ hide(0); return; }
+  let done=false; const once=()=>{ if(done) return; done=true; hide(400); sessionStorage.setItem('rolloverDone','1'); };
+  if(document.readyState==='interactive' || document.readyState==='complete'){ once(); }
+  else { document.addEventListener('DOMContentLoaded', once, {once:true}); }
+  window.addEventListener('load', once, {once:true});
+  setTimeout(once, 3500);
+})();
+
+</script>
+<script>
+
+(function(){
+  if (window.__SD_V3PLUS) return; window.__SD_V3PLUS = true;
+  const wrap=document.getElementById('site-scroll-dots'); if(!wrap) return;
+  const d=wrap.querySelector('.dots'), t=wrap.querySelector('.trails');
+  function build(){ const N=Math.max(10, Math.round(window.innerHeight/28)); d.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; d.appendChild(s);} }
+  function prog(){ const h=document.documentElement; const m=h.scrollHeight-h.clientHeight; return m>0?h.scrollTop/m:0; }
+  let last=-1;
+  function upd(){ const dots=d.querySelectorAll('.dot'); if(!dots.length)return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((e,i)=>e.classList.toggle('active', i===idx));
+    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=d.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const tr=document.createElement('span'); tr.className='trail'; tr.style.top=y+'px'; t.appendChild(tr); setTimeout(()=>tr.remove(),1600); last=idx; } }
+  const go=()=>{ build(); upd(); }; go();
+  window.addEventListener('resize', go, {passive:true}); window.addEventListener('scroll', upd, {passive:true});
+})();
+(function(){
+  if (window.__MD_V3PLUS) return; window.__MD_V3PLUS = true;
+  const c=document.querySelector('.project-modal-content'); const k=document.getElementById('modal-dots'); if(!c||!k) return;
+  const d=k.querySelector('.dots'), t=k.querySelector('.trails');
+  function build(){ const N=Math.max(8, Math.round(c.clientHeight/28)); d.innerHTML=''; for(let i=0;i<N;i++){ const s=document.createElement('span'); s.className='dot'; d.appendChild(s);} }
+  function prog(){ const m=c.scrollHeight-c.clientHeight; return m>0?c.scrollTop/m:0; }
+  let last=-1;
+  function upd(){ const dots=d.querySelectorAll('.dot'); if(!dots.length)return; const N=dots.length; const p=prog(); const idx=Math.max(0, Math.min(N-1, Math.round(p*(N-1)))); dots.forEach((e,i)=>e.classList.toggle('active', i===idx));
+    if(idx!==last && dots[idx]){ const r=dots[idx].getBoundingClientRect(); const rw=d.getBoundingClientRect(); const y=r.top-rw.top + r.height/2 - 3; const tr=document.createElement('span'); tr.className='trail'; tr.style.top=y+'px'; t.appendChild(tr); setTimeout(()=>tr.remove(),1600); last=idx; } }
+  const go=()=>{ build(); upd(); }; go();
+  new ResizeObserver(()=>go()).observe(c); c.addEventListener('scroll', upd, {passive:true});
+  const root=c.parentElement||c; new MutationObserver(()=>{ if(root.classList.contains('open')) go(); }).observe(root,{attributes:true,attributeFilter:['class']});
 })();
 
 </script>
